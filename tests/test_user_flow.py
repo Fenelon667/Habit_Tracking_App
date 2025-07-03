@@ -100,7 +100,7 @@ def test_delete_current_user_confirm_no(monkeypatch, test_db, capfd):
 # --------------------------- TEST: Select existing users ------------------------------
 
 def test_select_existing_user(monkeypatch, test_db, capfd):
-    monkeypatch.setattr(validators, "get_valid_index_input", lambda prompt, opts, go_back=True: 1)
+    monkeypatch.setattr(validators, "get_valid_index_input", lambda prompt, opts, go_back=True: 2)
 
     cursor = test_db.cursor()
     cursor.executemany(
@@ -117,9 +117,9 @@ def test_select_existing_user(monkeypatch, test_db, capfd):
     out, err = capfd.readouterr()
     print("--- CAPTURED OUTPUT FOR test_select_existing_user---")
     print(out)
-
+    print(repr(out))
     assert "Select a user:" in out
-    assert "2. Simon" in out
+    assert "2. 🟢 Simon" in out.splitlines()[2]
 
 # --------------------------- TEST: Select existing usernames ------------------------------
 

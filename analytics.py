@@ -50,7 +50,8 @@ def list_tracked_habits(current_user_id: int, current_username: str) -> None:
         if not habits:
             print("📭 You are not currently tracking any habits.")
             if get_yes_no_numbered("Would you like to create one now?"):
-                create_habit(current_user_id, current_username, conn, cursor)
+                #create_habit(current_user_id, current_username, conn, cursor)
+                create_habit(current_user_id, current_username)
             else:
                 print("↩️ Returning to Habit Tracker Overview.\n")
             return
@@ -84,7 +85,8 @@ def list_habits_by_frequency(current_user_id: int, current_username: str) -> Non
         if not habits:
             print(f"📭 You have no habits with '{frequency}' frequency.")
             if get_yes_no_numbered("Would you like to create one now?"):
-                create_habit(current_user_id, current_username, conn, cursor)
+                create_habit(current_user_id, current_username)
+                #create_habit(current_user_id, current_username, conn, cursor)
             else:
                 print("↩️ Returning to Habit Tracker Overview.\n")
             return
@@ -113,7 +115,8 @@ def get_longest_overall_streak(current_user_id: int, current_username: str) -> N
         if not max_result or max_result[0] is None:
             print("📭 No habits found to evaluate longest streak.")
             if get_yes_no_numbered("Would you like to create one now?"):
-                create_habit(current_user_id, current_username, conn, cursor)
+                create_habit(current_user_id, current_username)
+                #create_habit(current_user_id, current_username, conn, cursor)
             else:
                 print("↩️ Returning to Habit Tracker Overview.\n")
             return
@@ -153,7 +156,8 @@ def get_longest_streak_for_habit(current_user_id: int, current_username: str) ->
         if not habits:
             print("📭 You don't have any habits to analyze.")
             if get_yes_no_numbered("Would you like to create one now?"):
-                create_habit(current_user_id, current_username, conn, cursor)
+                create_habit(current_user_id, current_username)
+                #create_habit(current_user_id, current_username, conn, cursor)
             else:
                 print("↩️ Returning to Habit Tracker Overview.\n")
             return

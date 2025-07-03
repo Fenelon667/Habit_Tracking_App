@@ -25,60 +25,63 @@ from validators import get_valid_index_input, get_yes_no_numbered, exit_applicat
 from streaks import update_streaks
 
 
-def create_habit(current_user_id: int, current_username: str, conn, cursor) -> None:
+#def create_habit(current_user_id: int, current_username: str, conn, cursor) -> None:
+def create_habit(current_user_id: int, current_username: str) -> None:
     MAX_LENGTH = 50
     pattern = re.compile(r'^[A-Za-z0-9 \-]+$')
 
-    cursor.execute("PRAGMA foreign_keys = ON")
+    with sqlite3.connect(DB_FILE) as conn: # ADDED THIS PART!!!!!! #
+        cursor = conn.cursor() # ADDED THIS PART!!!!!! #
+        cursor.execute("PRAGMA foreign_keys = ON")
 
-    while True:
-        habit_name_input = input("Enter habit name (or type 'back' to cancel): ").strip()
-        habit_name_lower = habit_name_input.lower()
+        while True:
+            habit_name_input = input("Enter habit name (or type 'back' to cancel): ").strip()
+            habit_name_lower = habit_name_input.lower()
 
-        if habit_name_lower == "back":
+            if habit_name_lower == "back":
+                print("↩️ Habit creation cancelled.\n")
+                return
+
+            if len(habit_name_input) == 0:
+                print("❌ Habit name cannot be empty.\n")
+                continue
+
+            if len(habit_name_input) > MAX_LENGTH:
+                print(f"❌ Habit name too long. Please limit to {MAX_LENGTH} characters.\n")
+                continue
+
+            if not pattern.match(habit_name_input):
+                print("❌ Habit name can only contain letters, numbers, spaces, and dashes.\n")
+                continue
+
+            cursor.execute(
+                "SELECT 1 FROM habits WHERE user_id = ? AND habit_name = ?",
+                (current_user_id, habit_name_lower)
+            )
+            if cursor.fetchone():
+                print(f"❌ You already have a habit named '{habit_name_input}'. Choose a different name.\n")
+            else:
+                break
+
+        frequency = select_frequency()
+        if frequency is None:
             print("↩️ Habit creation cancelled.\n")
             return
 
-        if len(habit_name_input) == 0:
-            print("❌ Habit name cannot be empty.\n")
-            continue
+        habit = Habit(habit_name=habit_name_input, frequency=frequency, user_id=current_user_id)
 
-        if len(habit_name_input) > MAX_LENGTH:
-            print(f"❌ Habit name too long. Please limit to {MAX_LENGTH} characters.\n")
-            continue
-
-        if not pattern.match(habit_name_input):
-            print("❌ Habit name can only contain letters, numbers, spaces, and dashes.\n")
-            continue
-
-        cursor.execute(
-            "SELECT 1 FROM habits WHERE user_id = ? AND habit_name = ?",
-            (current_user_id, habit_name_lower)
-        )
-        if cursor.fetchone():
-            print(f"❌ You already have a habit named '{habit_name_input}'. Choose a different name.\n")
-        else:
-            break
-
-    frequency = select_frequency()
-    if frequency is None:
-        print("↩️ Habit creation cancelled.\n")
-        return
-
-    habit = Habit(habit_name=habit_name_input, frequency=frequency, user_id=current_user_id)
-
-    try:
-        cursor.execute(
-            '''
-            INSERT INTO habits (user_id, habit_name, habit_name_display, frequency, streak, longest_streak)
-            VALUES (?, ?, ?, ?, ?, ?)
-            ''',
-            habit.to_db_tuple()
-        )
-        conn.commit()
-        print(f"✅ Habit '{habit_name_input}' ({frequency}) created for user {current_username}.")
-    except sqlite3.IntegrityError:
-        print("❌ Failed to create habit due to a database error.")
+        try:
+            cursor.execute(
+                '''
+                INSERT INTO habits (user_id, habit_name, habit_name_display, frequency, streak, longest_streak)
+                VALUES (?, ?, ?, ?, ?, ?)
+                ''',
+                habit.to_db_tuple()
+            )
+            conn.commit()
+            print(f"✅ Habit '{habit_name_input}' ({frequency}) created for user {current_username}.")
+        except sqlite3.IntegrityError:
+            print("❌ Failed to create habit due to a database error.")
 
 
 
@@ -143,7 +146,8 @@ def mark_habit_completed(current_user_id: int, current_username: str):
         if not all_habits:
             print("❌ You have no habits to complete.")
             if get_yes_no_numbered("Would you like to create one now?"):
-                create_habit(current_user_id, current_username, conn, cursor)
+                #create_habit(current_user_id, current_username, conn, cursor)
+                create_habit(current_user_id, current_username)
             else:
                 print("↩️ Returning to Habit Management.\n")
             return

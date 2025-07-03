@@ -11,7 +11,6 @@ Covered features:
 """
 
 import sqlite3
-import pytest
 import os
 import sys
 

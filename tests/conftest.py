@@ -30,7 +30,7 @@ if project_root not in sys.path:
 
 import user_flow
 import create_db
-import validators
+
 
 @pytest.fixture
 def test_db():

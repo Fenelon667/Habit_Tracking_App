@@ -25,15 +25,10 @@ from datetime import datetime, timedelta
 from create_db import DB_FILE
 
 
-def calculate_streaks(habit_id):
-    conn = sqlite3.connect(DB_FILE)
-    cursor = conn.cursor()
-    cursor.execute("PRAGMA foreign_keys = ON")
-
+def calculate_streaks(habit_id, cursor):
     cursor.execute("SELECT frequency FROM habits WHERE habit_id = ?", (habit_id,))
     result = cursor.fetchone()
     if not result or result[0] is None:
-        conn.close()
         return (0, 0)
 
     frequency = result[0]
@@ -44,7 +39,6 @@ def calculate_streaks(habit_id):
         ORDER BY completed_at ASC
     """, (habit_id,))
     rows = cursor.fetchall()
-    conn.close()
 
     if not rows:
         return (0, 0)
@@ -78,7 +72,7 @@ def calculate_streaks(habit_id):
 
 
 def update_streaks(habit_id, cursor):
-    current_streak, longest_streak = calculate_streaks(habit_id)
+    current_streak, longest_streak = calculate_streaks(habit_id, cursor)
 
     cursor.execute("""
         UPDATE habits
