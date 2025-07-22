@@ -1,25 +1,24 @@
-
 """
 This test file verifies the Habit class functionality of the Habit Tracker application.
-Tests are performed entirely in memory to ensure logic and formatting work independently of database state.
+All tests are performed in memory, independently of the database, to ensure correctness
+of data normalization, formatting, and class methods.
 
 Covered features:
 - Creating Habit instances using the class constructor (`__init__`)
-- Verifying proper normalization of habit names to lowercase
-- Preserving original casing via habit_name_display
-- Exporting data as tuples using `to_db_tuple` for SQLite insertion
-- Generating human-readable output using `__str__`
-- Capturing and printing output for visual confirmation of class behavior
+- Normalizing habit names to lowercase for internal consistency
+- Preserving original casing via `habit_name_display` for display purposes
+- Exporting class data using `to_db_tuple` for SQLite insertion
+- Generating human-readable string output via `__str__`
+- Capturing and printing outputs for manual inspection
 """
 
 import sys
 import os
+from habit import Habit
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
-
-from habit import Habit
 
 
 def test_habit_initialization():

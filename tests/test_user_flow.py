@@ -19,14 +19,15 @@ Covered features:
 import pytest
 import os
 import sys
+import user_flow
+from user_flow import create_user
+import validators
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-import user_flow
-from user_flow import create_user, get_existing_usernames
-import validators
+
 
 # --------------------------- TEST: Create a new user --------------------------------
 

@@ -1,22 +1,21 @@
 """
-This file is used by pytest to define reusable fixtures shared across all test files
-in the Habit Tracker application.
+This file defines shared pytest fixtures for the Habit Tracker application.
+These fixtures ensure test isolation, in-memory database operations, and schema consistency
+across all test modules.
 
 Defined fixtures:
 
-- clean_test_db:
-    Clears 'users', 'habits', and 'habit_completions' tables and resets auto-increment IDs
-    before each test to ensure isolation and avoid test interference.
-
 - test_db:
-    Sets up an in-memory SQLite database with the production schema.
-    Used for all database-related tests without affecting real data.
+    Provides an in-memory SQLite database with the full production schema
+    (users, habits, habit_completions), used for all DB-related tests.
+
+- clean_test_db:
+    Automatically clears all tables and resets auto-increment counters before each test
+    to ensure a clean and isolated environment.
 
 - mock_db_file:
-    Replaces DB_FILE in all modules with an in-memory database ('file::memory:?cache=shared')
-    to prevent changes to the real habit_tracker.db during tests.
-
-These fixtures ensure a clean, reliable, and isolated environment for consistent test execution.
+    Replaces the DB_FILE path in key modules with an in-memory database URI
+    to prevent writing to the real `habit_tracker.db` during tests.
 """
 
 import sqlite3
@@ -30,16 +29,18 @@ if project_root not in sys.path:
 
 import user_flow
 import create_db
+import analytics
+import habit_flow
 
 
 @pytest.fixture
 def test_db():
-    """Provides an in-memory SQLite database with 'users', 'habits', and 'habit_completions' tables."""
+    """Provide an in-memory SQLite database with required tables."""
     conn = sqlite3.connect("file::memory:?cache=shared", uri=True)
     cursor = conn.cursor()
     cursor.execute("PRAGMA foreign_keys = ON;")
 
-    # Create users table (updated schema)
+    # Create tables with schema matching production
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
             user_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -47,13 +48,12 @@ def test_db():
             user_name_display TEXT NOT NULL
         )
     """)
-
-    # Create habits table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS habits (
             habit_id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
             habit_name TEXT NOT NULL,
+            habit_name_display TEXT NOT NULL,
             frequency TEXT CHECK(frequency IN ('daily', 'weekly')),
             streak INTEGER DEFAULT 0,
             longest_streak INTEGER DEFAULT 0,
@@ -62,8 +62,6 @@ def test_db():
             FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
         )
     """)
-
-    # Create habit_completions table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS habit_completions (
             completion_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -80,10 +78,10 @@ def test_db():
 
 @pytest.fixture(autouse=True)
 def clean_test_db(test_db):
-    """Automatically clears all tables before each test."""
+    """Clear all tables and reset autoincrement before each test for isolation."""
     cursor = test_db.cursor()
 
-    # Clear child tables first due to foreign key constraints
+    # Clear in order respecting foreign key constraints
     cursor.execute("DELETE FROM habit_completions")
     cursor.execute("DELETE FROM sqlite_sequence WHERE name='habit_completions'")
 
@@ -99,5 +97,15 @@ def clean_test_db(test_db):
 @pytest.fixture(autouse=True)
 def mock_db_file(monkeypatch):
     memory_uri = "file::memory:?cache=shared"
-    monkeypatch.setattr(user_flow, "DB_FILE", memory_uri)
-    monkeypatch.setattr(create_db, "DB_FILE", memory_uri)
+
+    # Patch get_db_file in the create_db module itself
+    monkeypatch.setattr(create_db, "get_db_file", lambda: memory_uri)
+    
+    # Patch get_db_file inside habit_flow module (because it imports create_db)
+    monkeypatch.setattr(habit_flow.create_db, "get_db_file", lambda: memory_uri)
+
+    # Patch get_db_file inside user_flow module (because it imports create_db)
+    monkeypatch.setattr(user_flow.create_db, "get_db_file", lambda: memory_uri)
+
+    # Patch DB_FILE in analytics if used directly
+    monkeypatch.setattr(analytics, "DB_FILE", memory_uri)

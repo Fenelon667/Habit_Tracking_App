@@ -1,25 +1,27 @@
 """
 Habit Flow Module for the Habit Tracker application.
 
-Handles creation, selection, and deletion of user habits, including input validation
-and foreign key constraint enforcement.
+Handles creation, selection, deletion, and completion tracking of user habits,
+including input validation and foreign key constraint enforcement.
 
 Functions:
 - create_habit: Prompts for a new habit name and frequency, validates input, and inserts it into the database.
-- select_frequency: Displays frequency options ('daily', 'weekly') and returns the selected choice.
-- delete_habit: Lists and deletes a selected habit for the current user after confirmation.
-- mark_habit_completed: Marks a habit as completed if eligible, updates streaks, and provides feedback.
+- select_frequency: Displays frequency options ('daily', 'weekly') and returns the selected choice or navigation commands.
+- delete_habit: Lists habits for the current user and deletes the selected habit after confirmation.
+- mark_habit_completed: Allows marking a habit as completed if eligible, updates streaks, and provides feedback.
 
 Notes:
-- All habit names are stored in lowercase and must be unique per user.
-- Input is validated for format, length, and duplication.
-- Foreign key constraints are explicitly enabled for each connection to ensure cascading deletes.
+- Habit names are stored in lowercase for uniqueness but preserve original casing for display.
+- Inputs are validated for format, length, and duplication.
+- Foreign key constraints are explicitly enabled for each database connection to ensure cascading deletes.
+- User can navigate through menus with 'go back' and 'exit' options.
 """
 
 import re
 import sqlite3
 from habit import Habit
-from create_db import DB_FILE
+#from create_db import DB_FILE
+import create_db
 from datetime import datetime, timedelta
 from validators import get_valid_index_input, get_yes_no_numbered, exit_application
 from streaks import update_streaks
@@ -30,7 +32,8 @@ def create_habit(current_user_id: int, current_username: str) -> None:
     MAX_LENGTH = 50
     pattern = re.compile(r'^[A-Za-z0-9 \-]+$')
 
-    with sqlite3.connect(DB_FILE) as conn: # ADDED THIS PART!!!!!! #
+    #with sqlite3.connect(DB_FILE) as conn: # ADDED THIS PART!!!!!! #
+    with sqlite3.connect(create_db.get_db_file(), uri=True) as conn:
         cursor = conn.cursor() # ADDED THIS PART!!!!!! #
         cursor.execute("PRAGMA foreign_keys = ON")
 
@@ -97,7 +100,8 @@ def select_frequency() -> str | None:
 
 
 def delete_habit(user_id: int) -> None:
-    with sqlite3.connect(DB_FILE) as conn:
+    with sqlite3.connect(create_db.get_db_file(), uri=True) as conn:
+    #with sqlite3.connect(DB_FILE) as conn:
         cursor = conn.cursor()
         cursor.execute("PRAGMA foreign_keys = ON")
 
@@ -133,7 +137,8 @@ def delete_habit(user_id: int) -> None:
 
 
 def mark_habit_completed(current_user_id: int, current_username: str):
-    with sqlite3.connect(DB_FILE, timeout=10.0) as conn:
+    #with sqlite3.connect(DB_FILE, timeout=10.0) as conn:
+    with sqlite3.connect(create_db.get_db_file(), timeout=10.0, uri=True) as conn:
         conn.execute("PRAGMA foreign_keys = ON")
         cursor = conn.cursor()
 

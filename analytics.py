@@ -8,8 +8,9 @@ a continuous user flow when no data is available.
 Functions:
 - list_tracked_habits: Displays all currently tracked habits for the user, including frequency and creation date.
 - list_habits_by_frequency: Prompts the user to select a frequency and displays all matching habits.
-- get_longest_overall_streak: Shows all habits that share the longest recorded streak for the user.
-- get_longest_streak_for_habit: Allows the user to select a specific habit and view its longest recorded streak.
+- get_longest_overall_streak: Displays all habits that share the longest recorded streak for the user.
+- get_longest_streak_for_habit: Prompts the user to select a specific habit and view its longest recorded streak.
+- list_habits_due_today: Lists habits that are due today based on their frequency and last completion date.
 
 Notes:
 - All functions automatically prompt the user to create a habit if none exist.
@@ -21,14 +22,6 @@ import sqlite3
 from datetime import datetime, timedelta
 from create_db import DB_FILE
 from validators import get_yes_no_numbered, get_valid_index_input
-from habit_flow import create_habit
-from habit_flow import select_frequency
-from streaks import update_streaks
-
-
-import sqlite3
-from create_db import DB_FILE
-from validators import get_yes_no_numbered, get_valid_index_input
 from habit_flow import create_habit, select_frequency, exit_application
 
 
@@ -36,7 +29,7 @@ def list_tracked_habits(current_user_id: int, current_username: str) -> None:
     """
     Displays all currently tracked habits for the user.
     """
-    with sqlite3.connect(DB_FILE) as conn:
+    with sqlite3.connect(DB_FILE, uri=True) as conn:
         cursor = conn.cursor()
         cursor.execute("PRAGMA foreign_keys = ON")
         cursor.execute("""
@@ -50,7 +43,6 @@ def list_tracked_habits(current_user_id: int, current_username: str) -> None:
         if not habits:
             print("📭 You are not currently tracking any habits.")
             if get_yes_no_numbered("Would you like to create one now?"):
-                #create_habit(current_user_id, current_username, conn, cursor)
                 create_habit(current_user_id, current_username)
             else:
                 print("↩️ Returning to Habit Tracker Overview.\n")
@@ -58,7 +50,8 @@ def list_tracked_habits(current_user_id: int, current_username: str) -> None:
 
         print("\n📋 Currently Tracked Habits:\n")
         for idx, (name, frequency, created_at) in enumerate(habits, 1):
-            print(f"{idx}. {name} ({frequency}) - Created on {created_at}")
+            formatted_date = datetime.fromisoformat(created_at).strftime("%b %d, %Y at %H:%M")
+            print(f"{idx}. {name} ({frequency}) - Created on {formatted_date}")
         print()
 
 
@@ -71,7 +64,7 @@ def list_habits_by_frequency(current_user_id: int, current_username: str) -> Non
         print("↩️ Frequency selection cancelled.\n")
         return
 
-    with sqlite3.connect(DB_FILE) as conn:
+    with sqlite3.connect(DB_FILE, uri=True) as conn:
         cursor = conn.cursor()
         cursor.execute("PRAGMA foreign_keys = ON")
         cursor.execute("""
@@ -86,14 +79,14 @@ def list_habits_by_frequency(current_user_id: int, current_username: str) -> Non
             print(f"📭 You have no habits with '{frequency}' frequency.")
             if get_yes_no_numbered("Would you like to create one now?"):
                 create_habit(current_user_id, current_username)
-                #create_habit(current_user_id, current_username, conn, cursor)
             else:
                 print("↩️ Returning to Habit Tracker Overview.\n")
             return
 
         print(f"\n📅 Habits with '{frequency}' frequency:\n")
         for idx, (name, created_at) in enumerate(habits, 1):
-            print(f"{idx}. {name} - Created on {created_at}")
+            formatted_date = datetime.fromisoformat(created_at).strftime("%b %d, %Y at %H:%M")
+            print(f"{idx}. {name} - Created on {formatted_date}")
         print()
 
 
@@ -101,7 +94,7 @@ def get_longest_overall_streak(current_user_id: int, current_username: str) -> N
     """
     Displays all habits that share the longest recorded streak for the current user.
     """
-    with sqlite3.connect(DB_FILE) as conn:
+    with sqlite3.connect(DB_FILE, uri=True) as conn:
         cursor = conn.cursor()
         cursor.execute("PRAGMA foreign_keys = ON")
 
@@ -116,7 +109,6 @@ def get_longest_overall_streak(current_user_id: int, current_username: str) -> N
             print("📭 No habits found to evaluate longest streak.")
             if get_yes_no_numbered("Would you like to create one now?"):
                 create_habit(current_user_id, current_username)
-                #create_habit(current_user_id, current_username, conn, cursor)
             else:
                 print("↩️ Returning to Habit Tracker Overview.\n")
             return
@@ -141,7 +133,7 @@ def get_longest_streak_for_habit(current_user_id: int, current_username: str) ->
     """
     Prompts the user to select one of their habits and displays its longest recorded streak.
     """
-    with sqlite3.connect(DB_FILE) as conn:
+    with sqlite3.connect(DB_FILE, uri=True) as conn:
         cursor = conn.cursor()
         cursor.execute("PRAGMA foreign_keys = ON")
 
@@ -157,7 +149,6 @@ def get_longest_streak_for_habit(current_user_id: int, current_username: str) ->
             print("📭 You don't have any habits to analyze.")
             if get_yes_no_numbered("Would you like to create one now?"):
                 create_habit(current_user_id, current_username)
-                #create_habit(current_user_id, current_username, conn, cursor)
             else:
                 print("↩️ Returning to Habit Tracker Overview.\n")
             return
@@ -177,11 +168,13 @@ def get_longest_streak_for_habit(current_user_id: int, current_username: str) ->
         print(f"\n🏁 Longest streak for '{selected_name}': {selected_streak} completion(s)\n")
 
 
-
 def list_habits_due_today(current_user_id: int, current_username: str) -> None:
+    """
+    Lists habits that are due today based on their frequency and last completion date.
+    """
     due_today = []
 
-    with sqlite3.connect(DB_FILE, timeout=10.0) as conn:
+    with sqlite3.connect(DB_FILE, uri=True, timeout=10.0) as conn:
         cursor = conn.cursor()
         cursor.execute("PRAGMA foreign_keys = ON")
         cursor.execute("""

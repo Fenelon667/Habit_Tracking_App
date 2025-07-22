@@ -1,19 +1,22 @@
 """
 Habit class module for the Habit Tracker application.
 
-This module defines the Habit class, which represents the structure and core attributes
-of a habit associated with a user. It serves as a blueprint for creating and managing
-habit objects within the application.
+Defines the Habit class, representing a user-associated habit with core attributes
+and behaviors for creation and database interaction.
+
+Class:
+- Habit:
+    Encapsulates habit details such as name, frequency, streaks, and timestamps.
 
 Methods:
-- __init__: 
-    Initializes a Habit instance with relevant fields like name, frequency, and streaks.
+- __init__:
+    Initializes a Habit instance with fields including name, frequency, user association, and streak data.
 
-- to_db_tuple(): 
-    Returns the habit data as a tuple, formatted for SQLite insertion.
-    
-- __str__: 
-    Provides a readable string representation of the habit for display and debugging.
+- to_db_tuple():
+    Returns a tuple of habit attributes formatted for insertion into the SQLite database.
+
+- __str__:
+    Provides a readable string representation for display and debugging purposes.
 """
 
 from typing import Optional

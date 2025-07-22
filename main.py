@@ -3,23 +3,24 @@ Main Entry Point for the Habit Tracker Application.
 
 This module initializes the database and manages the Command Line Interface (CLI)
 navigation. It provides access to habit management, user account actions, and data
-visualization, structured into nested menus for an improved user experience.
+visualization, structured into nested menus for a user-friendly experience.
 
 Features:
-- Habit Management: Create, complete, and delete habits with cooldown logic.
+- Habit Management: Create, complete, and delete habits with cooldown enforcement.
 - User Management: Switch or delete user accounts securely.
-- Data Insights: View all or current user-specific habit and completion data.
-- Modular CLI: Clean navigation with headers, go-back options, and exit points.
+- Data Insights: View all or user-specific habit and completion data with filtering and streak analysis.
+- Modular CLI: Clear navigation with headers, 'go back' options, and exit points.
 
 Functions:
-- print_header: Displays the section title and logged-in user.
-- CLI loop: Presents main and sub-menus with action handling using validated input.
+- print_header: Displays the section title and current logged-in user.
+- CLI loop: Presents main and sub-menus, handling user choices with validated input.
 
 Usage:
-Run this script to launch the Habit Tracker's interactive interface.
+Run this script to launch the Habit Tracker's interactive command-line interface.
 """
 
 import sqlite3
+import create_db
 from habit_flow import create_habit, delete_habit, mark_habit_completed
 from create_db import DB_FILE, initialize_database
 from user_flow import login_flow, delete_current_user
@@ -49,7 +50,8 @@ if __name__ == "__main__":
             exit_application()
 
         if main_choice == 0:
-            with sqlite3.connect(DB_FILE) as conn:
+            with sqlite3.connect(create_db.get_db_file()) as conn:
+            #with sqlite3.connect(DB_FILE) as conn:
                 cursor = conn.cursor()
                 habit_options = ["View all habits", "Create new habit", "Mark habit completed", "Delete a habit"]
                 while True:
@@ -92,7 +94,8 @@ if __name__ == "__main__":
                         break
 
         elif main_choice == 2:
-            with sqlite3.connect(DB_FILE) as conn:
+            with sqlite3.connect(create_db.get_db_file()) as conn:
+            #with sqlite3.connect(DB_FILE) as conn:
                 cursor = conn.cursor()
                 cursor.execute("SELECT 1 FROM habits WHERE user_id = ?", (current_user_id,))
                 has_data = cursor.fetchone()
@@ -100,7 +103,8 @@ if __name__ == "__main__":
             if not has_data:
                 print("❌ You don't have any habits to analyze.")
                 if get_yes_no_numbered("Would you like to create one now?"):
-                    with sqlite3.connect(DB_FILE) as conn:
+                    with sqlite3.connect(create_db.get_db_file()) as conn:
+                    #with sqlite3.connect(DB_FILE) as conn:
                         cursor = conn.cursor()
                         #create_habit(current_user_id, current_username, conn, cursor)
                         create_habit(current_user_id, current_username)

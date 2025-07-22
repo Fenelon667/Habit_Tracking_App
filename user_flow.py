@@ -1,23 +1,24 @@
 """
 User Flow Module for the Habit Tracker application.
 
-Handles user login, account creation, selection, and deletion.
+Manages user account lifecycle including login, creation, selection, and deletion.
 
 Functions:
-- create_user: Prompts for a new username, validates it, and inserts it into the database if unique.
-- delete_current_user: Confirms and deletes the current user along with all associated habits and completions.
-- select_existing_user: Displays and allows selection from registered users.
-- get_existing_usernames: Returns all usernames in the database.
-- login_flow: Guides the user through login or account creation, with support for going back and exiting.
+- create_user: Prompts for a new username, validates uniqueness and format, then inserts into the database.
+- delete_current_user: Confirms and deletes the current user and all their associated habits and completions.
+- select_existing_user: Lists registered users for selection with support for going back or exiting.
+- get_existing_usernames: Retrieves all usernames (display form) from the database.
+- login_flow: Provides the main login menu to select or create users, with navigation support.
 
 Notes:
-- All usernames are stored in lowercase for uniqueness, but the original casing is preserved for display.
-- Input validation ensures clean and consistent data.
-- Foreign key constraints ensure that deleting a user also deletes related habits and habit completions.
+- Usernames are stored in lowercase to ensure uniqueness, while preserving the original casing for display.
+- Validation enforces alphanumeric usernames, length limits, and uniqueness.
+- Foreign key constraints ensure cascading deletions of related habit data when a user is removed.
+- All database connections enable foreign key enforcement.
 """
 
 import sqlite3
-from create_db import DB_FILE
+import create_db
 from validators import get_valid_index_input, get_yes_no_numbered, exit_application  
 
 
@@ -44,7 +45,8 @@ def create_user():
         username_lower = username_display.lower()
 
         try:
-            with sqlite3.connect(DB_FILE, uri=True) as conn:
+            with sqlite3.connect(create_db.get_db_file(), uri=True) as conn:
+            #with sqlite3.connect(DB_FILE, uri=True) as conn:
                 cursor = conn.cursor()
                 cursor.execute("SELECT * FROM users WHERE LOWER(user_name) = ?", (username_lower,))
                 if cursor.fetchone():
@@ -61,7 +63,8 @@ def create_user():
 
 
 def delete_current_user(current_user_id, current_user_name):
-    with sqlite3.connect(DB_FILE, uri=True) as conn:
+    with sqlite3.connect(create_db.get_db_file(), uri=True) as conn:
+    #with sqlite3.connect(DB_FILE, uri=True) as conn:
         cursor = conn.cursor()
         cursor.execute("PRAGMA foreign_keys = ON")
 
@@ -78,7 +81,8 @@ def delete_current_user(current_user_id, current_user_name):
 
 
 def select_existing_user():
-    with sqlite3.connect(DB_FILE, uri=True) as conn:
+    with sqlite3.connect(create_db.get_db_file(), uri=True) as conn:
+    #with sqlite3.connect(DB_FILE, uri=True) as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT user_id, user_name_display FROM users ORDER BY user_id")
         users = cursor.fetchall()
@@ -97,7 +101,8 @@ def select_existing_user():
 
 
 def get_existing_usernames():
-    with sqlite3.connect(DB_FILE, uri=True) as conn:
+    with sqlite3.connect(create_db.get_db_file(), uri=True) as conn:
+    #with sqlite3.connect(DB_FILE, uri=True) as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT user_name_display FROM users")
         rows = cursor.fetchall()

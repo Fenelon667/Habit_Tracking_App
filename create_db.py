@@ -1,24 +1,32 @@
 """
 Database setup module for the Habit Tracker application.
 
-This module handles the initialization of the SQLite database (habit_tracker.db),
-including creation of the 'users', 'habits', and 'habit_completions' tables,
-along with optional database inspection utilities.
+Handles the initialization and schema setup of the SQLite database (habit_tracker.db),
+including creation of the core tables: 'users', 'habits', and 'habit_completions'.
 
 Tables:
-- users: Stores user accounts with unique usernames.
-- habits: Stores habit entries linked to users via a foreign key relationship.
-- habit_completions: Stores individual timestamps for when a habit was marked completed.
+- users: Stores user accounts with unique, case-insensitive usernames and their display versions.
+- habits: Stores user habits linked by foreign key to users, including frequency and streak data.
+- habit_completions: Records timestamps of when habits are completed, linked by foreign key to habits.
 
 Functions:
-- initialize_database(): Creates the database file (if it doesn't exist) and ensures
-  all required tables are present with proper constraints.
-- list_tables(): Prints all tables in the database (for debugging purposes).
+- initialize_database(): Creates the database file (if not present) and ensures all required tables
+  exist with appropriate constraints and foreign key enforcement.
+- get_db_file(): Returns the path or filename of the database file (constant).
+- (Optional) list_tables(): Prints existing tables in the database for inspection (if implemented).
 """
 
 import sqlite3
 
 DB_FILE = "habit_tracker.db" #database filename (constant)
+def get_db_file():
+    """
+    Returns the path or filename of the SQLite database file used by the application.
+
+    Returns:
+        str: The filename or path of the SQLite database (e.g., 'habit_tracker.db').
+    """
+    return DB_FILE
 
 
 # users DB table schema
@@ -58,10 +66,29 @@ CREATE TABLE IF NOT EXISTS habit_completions (
 '''
 
 
-
-
 def initialize_database():
-    """Creates the SQLite database and initializes the users, habits, and completions tables."""
+    
+    """
+    Creates and initializes the SQLite database with required tables.
+
+    This function connects to the SQLite database file specified by `DB_FILE`.
+    It enables foreign key constraints and creates the following tables if they
+    do not already exist:
+
+    - users: stores user account information with unique usernames.
+    - habits: stores habits linked to users with frequency and streak information.
+    - habit_completions: stores timestamps of habit completions linked to habits.
+
+    Any SQL operational errors during creation are caught and printed.
+
+    Side effects:
+        Creates the database file and tables if missing.
+        Prints status messages regarding database initialization.
+
+    Raises:
+        sqlite3.OperationalError: If there is an error executing SQL commands.
+    """
+    
     try:
         with sqlite3.connect(DB_FILE) as conn:
             cursor = conn.cursor()
@@ -73,6 +100,9 @@ def initialize_database():
             print("Database initialized or already present.")  # -----------------------------REMOVE ----------------
     except sqlite3.OperationalError as e:
         print(f"SQL error during database initialization: {e}")
+
+if __name__ == "__main__":
+    initialize_database()
 
 
 

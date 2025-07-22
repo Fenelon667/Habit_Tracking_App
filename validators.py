@@ -1,17 +1,18 @@
 """
 Validators Module for the Habit Tracker application.
 
-This module provides reusable input validation and CLI utility functions to ensure
-consistent, user-friendly interactions throughout the application.
+Provides reusable input validation and CLI utility functions to ensure
+consistent and user-friendly interactions throughout the application.
 
 Functions:
-- get_valid_index_input: Displays a numbered menu, supports optional 'Go back' and 'Exit' options,
-  and validates that the user selects a valid number from the list.
-- get_yes_no_numbered: Displays a Yes/No prompt using numbered input (1 for Yes, 2 for No),
-  and returns a boolean value.
+- get_valid_index_input: Displays a numbered menu with optional 'Go back' and 'Exit Application' options.
+  Validates and returns the user's choice as an index, 'exit', or None for go back.
+- get_yes_no_numbered: Prompts for a Yes/No input using numbered choices (1 for Yes, 2 for No).
+  Returns True for Yes and False for No.
 - exit_application: Prints a goodbye message and exits the application cleanly.
 """
 
+import sys
 
 def get_valid_index_input(prompt: str, options: list[str], go_back: bool = False, allow_exit: bool = False) -> int | str | None:
     display_options = [f"🟢 {option}" for option in options]
@@ -63,4 +64,4 @@ def get_yes_no_numbered(prompt: str) -> bool:
 
 def exit_application():
     print("Goodbye!")
-    exit()
+    sys.exit()

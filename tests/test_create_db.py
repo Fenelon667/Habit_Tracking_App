@@ -1,14 +1,19 @@
 """
-This test file verifies the database initialization functionality of the Habit Tracker application.
-Tests are executed using a temporary SQLite database file to ensure the real habit_tracker.db remains unaffected.
+This test file verifies the database initialization logic of the Habit Tracker application.
+All tests use a temporary SQLite database to ensure the real habit_tracker.db remains unaffected.
 
 Covered features:
-- Initializing the database using `initialize_database`
-- Creating the 'users', 'habits', and 'habit_completions' tables
+- Creating required tables via `initialize_database`:
+    - users
+    - habits
+    - habit_completions
 - Enabling and validating foreign key constraints
-- Verifying table creation and schema structure using PRAGMA statements
-- Capturing and printing database state and structure for visual confirmation
+- Inspecting schema structure with PRAGMA statements
+- Verifying foreign key links across habits and completions
+- Ensuring automatic population of timestamps (created_at)
+- Capturing and printing database metadata for confirmation
 """
+
 
 import sqlite3
 import os
