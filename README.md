@@ -39,9 +39,31 @@ The application was built with Python and SQLite, and uses a modular code struct
 ## Installation
 Follow these steps to set up and run the Habit Tracking Application on your local machine.
 
+### Requirements
+To use this application, make sure the following are installed on your system:
+- **Python 3.8+** – Required to run the application. You can verify installation with:
+```bash
+python --version
+```
+Or for Windows:
+```bash
+py --version
+```
+- **Git** – Needed to clone the repository from GitHub. You can verify installation with:
+```bash
+git --version
+```
+- **pip** – Comes with Python and is used to install dependencies. Verify with:
+```bash
+pip --version
+```
+
+  
+
+   
 ### 1. Clone the repository:
    ```bash
-   git clone https://github.com/Fenelon667/Habit_Tracking_App
+   git clone https://github.com/Fenelon667/Habit_Tracking_App.git
    cd Habit_Tracking_App
    ```
 
@@ -60,7 +82,7 @@ Follow these steps to set up and run the Habit Tracking Application on your loca
   
 ### 3. Install dependencies
   ```bash
-  pip install -r requirements.txt
+  py -m pip install -r requirements.txt
   ```
 If you don't have a requirements.txt file, you can manually install needed packages like this:
 pip install pytest
