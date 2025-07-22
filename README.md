@@ -45,10 +45,6 @@ To use this application, make sure the following are installed on your system:
 ```bash
 python --version
 ```
-Or for Windows:
-```bash
-py --version
-```
 - **Git** – Needed to clone the repository from GitHub. You can verify installation with:
 ```bash
 git --version
@@ -113,14 +109,14 @@ python load_dummy_data.py
 This project uses **[Pytest](https://docs.pytest.org/)** for unit testing.
 To run all tests, open your terminal and run:
 ```bash
-pytest
+python -m pytest tests
 ```
 Make sure you're in the root project directory where your test files (named like test_*.py) are located — typically in a test/ or tests/ folder.
 
 Each test provides printed output to show what is being tested and whether it passed. This makes it easier to follow along when running tests manually.
 To see detailed output in the terminal, run:
 ```bash
-pytest -s
+python -m pytest -s tests
 ```
 The -s flag allows print() statements inside tests to be shown in the console.
 
