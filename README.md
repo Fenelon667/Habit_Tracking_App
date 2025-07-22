@@ -117,6 +117,5 @@ To see detailed output in the terminal, run:
 ```bash
 python -m pytest -s tests
 ```
-The -s flag allows print() statements inside tests to be shown in the console.
 
 
