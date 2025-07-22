@@ -27,12 +27,10 @@ from validators import get_valid_index_input, get_yes_no_numbered, exit_applicat
 from streaks import update_streaks
 
 
-#def create_habit(current_user_id: int, current_username: str, conn, cursor) -> None:
 def create_habit(current_user_id: int, current_username: str) -> None:
     MAX_LENGTH = 50
     pattern = re.compile(r'^[A-Za-z0-9 \-]+$')
 
-    #with sqlite3.connect(DB_FILE) as conn: # ADDED THIS PART!!!!!! #
     with sqlite3.connect(create_db.get_db_file(), uri=True) as conn:
         cursor = conn.cursor() # ADDED THIS PART!!!!!! #
         cursor.execute("PRAGMA foreign_keys = ON")
@@ -101,7 +99,6 @@ def select_frequency() -> str | None:
 
 def delete_habit(user_id: int) -> None:
     with sqlite3.connect(create_db.get_db_file(), uri=True) as conn:
-    #with sqlite3.connect(DB_FILE) as conn:
         cursor = conn.cursor()
         cursor.execute("PRAGMA foreign_keys = ON")
 
@@ -137,7 +134,6 @@ def delete_habit(user_id: int) -> None:
 
 
 def mark_habit_completed(current_user_id: int, current_username: str):
-    #with sqlite3.connect(DB_FILE, timeout=10.0) as conn:
     with sqlite3.connect(create_db.get_db_file(), timeout=10.0, uri=True) as conn:
         conn.execute("PRAGMA foreign_keys = ON")
         cursor = conn.cursor()
@@ -151,7 +147,6 @@ def mark_habit_completed(current_user_id: int, current_username: str):
         if not all_habits:
             print("❌ You have no habits to complete.")
             if get_yes_no_numbered("Would you like to create one now?"):
-                #create_habit(current_user_id, current_username, conn, cursor)
                 create_habit(current_user_id, current_username)
             else:
                 print("↩️ Returning to Habit Management.\n")

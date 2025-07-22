@@ -51,7 +51,6 @@ if __name__ == "__main__":
 
         if main_choice == 0:
             with sqlite3.connect(create_db.get_db_file()) as conn:
-            #with sqlite3.connect(DB_FILE) as conn:
                 cursor = conn.cursor()
                 habit_options = ["View all habits", "Create new habit", "Mark habit completed", "Delete a habit"]
                 while True:
@@ -65,7 +64,6 @@ if __name__ == "__main__":
                     elif habit_choice == 0:
                         list_tracked_habits(current_user_id, current_username)
                     elif habit_choice == 1:
-                        #create_habit(current_user_id, current_username, conn, cursor)
                        create_habit(current_user_id, current_username)
                     elif habit_choice == 2:
                         mark_habit_completed(current_user_id, current_username)
@@ -73,7 +71,6 @@ if __name__ == "__main__":
                         delete_habit(current_user_id)
 
         elif main_choice == 1:
-            # User Management runs outside any open connection block
             user_options = ["Change user", "Delete current user"]
             while True:
                 print_header(current_username, "User Management")
@@ -95,7 +92,6 @@ if __name__ == "__main__":
 
         elif main_choice == 2:
             with sqlite3.connect(create_db.get_db_file()) as conn:
-            #with sqlite3.connect(DB_FILE) as conn:
                 cursor = conn.cursor()
                 cursor.execute("SELECT 1 FROM habits WHERE user_id = ?", (current_user_id,))
                 has_data = cursor.fetchone()
@@ -104,9 +100,7 @@ if __name__ == "__main__":
                 print("❌ You don't have any habits to analyze.")
                 if get_yes_no_numbered("Would you like to create one now?"):
                     with sqlite3.connect(create_db.get_db_file()) as conn:
-                    #with sqlite3.connect(DB_FILE) as conn:
                         cursor = conn.cursor()
-                        #create_habit(current_user_id, current_username, conn, cursor)
                         create_habit(current_user_id, current_username)
                 else:
                     print("↩️ Returning to Habit Tracker Overview.\n")

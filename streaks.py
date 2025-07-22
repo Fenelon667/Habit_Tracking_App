@@ -25,7 +25,6 @@ Note:
 - The caller must provide a cursor with an active database connection.
 """
 
-import sqlite3
 from datetime import datetime, timedelta
 from create_db import DB_FILE
 

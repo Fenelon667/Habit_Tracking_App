@@ -1,3 +1,43 @@
+"""
+load_dummy_data.py
+
+Script to populate the Habit Tracker application's database with dummy data for development and testing.
+
+Features:
+- Creates 5 example users with unique usernames.
+- Adds a variety of habits per user, including different frequencies (daily/weekly).
+- Simulates 6 weeks of historical completion data per habit, including:
+    - Mostly consistent completions
+    - Some habits with intentionally broken streaks
+- Sets each habit's `created_at` to a date earlier than its first completion.
+- Automatically creates the database and required tables if they do not exist.
+
+Modules Used:
+- sqlite3: For interacting with the SQLite database.
+- os, subprocess: For checking file existence and triggering setup.
+- datetime, timedelta: For generating realistic timestamps.
+- random: To introduce variability in completion behavior.
+- create_db: Provides the `initialize_database()` function and DB file path.
+
+How It Works:
+1. Ensures the database file and tables are present using `ensure_database_is_ready()`.
+2. Creates users with both lowercase `user_name` and capitalized `user_name_display`.
+3. Assigns different habits to users, including:
+    - One user with 5 habits
+    - Others with 2 habits each
+4. For each habit:
+    - Inserts historical completions over a 6-week period
+    - Randomly skips some completions to simulate broken streaks
+5. Commits all data and prints a success message.
+
+Note:
+This script is meant for internal testing/demo purposes and should not be committed to production codebases or Git history if it contains static/test data.
+
+Run from CLI:
+    python load_dummy_data.py
+"""
+
+
 import sqlite3
 import os
 from datetime import datetime, timedelta

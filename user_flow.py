@@ -46,7 +46,6 @@ def create_user():
 
         try:
             with sqlite3.connect(create_db.get_db_file(), uri=True) as conn:
-            #with sqlite3.connect(DB_FILE, uri=True) as conn:
                 cursor = conn.cursor()
                 cursor.execute("SELECT * FROM users WHERE LOWER(user_name) = ?", (username_lower,))
                 if cursor.fetchone():
@@ -64,7 +63,6 @@ def create_user():
 
 def delete_current_user(current_user_id, current_user_name):
     with sqlite3.connect(create_db.get_db_file(), uri=True) as conn:
-    #with sqlite3.connect(DB_FILE, uri=True) as conn:
         cursor = conn.cursor()
         cursor.execute("PRAGMA foreign_keys = ON")
 
@@ -82,7 +80,6 @@ def delete_current_user(current_user_id, current_user_name):
 
 def select_existing_user():
     with sqlite3.connect(create_db.get_db_file(), uri=True) as conn:
-    #with sqlite3.connect(DB_FILE, uri=True) as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT user_id, user_name_display FROM users ORDER BY user_id")
         users = cursor.fetchall()
@@ -102,7 +99,6 @@ def select_existing_user():
 
 def get_existing_usernames():
     with sqlite3.connect(create_db.get_db_file(), uri=True) as conn:
-    #with sqlite3.connect(DB_FILE, uri=True) as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT user_name_display FROM users")
         rows = cursor.fetchall()

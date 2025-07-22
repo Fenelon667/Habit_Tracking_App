@@ -98,14 +98,7 @@ def clean_test_db(test_db):
 def mock_db_file(monkeypatch):
     memory_uri = "file::memory:?cache=shared"
 
-    # Patch get_db_file in the create_db module itself
     monkeypatch.setattr(create_db, "get_db_file", lambda: memory_uri)
-    
-    # Patch get_db_file inside habit_flow module (because it imports create_db)
     monkeypatch.setattr(habit_flow.create_db, "get_db_file", lambda: memory_uri)
-
-    # Patch get_db_file inside user_flow module (because it imports create_db)
     monkeypatch.setattr(user_flow.create_db, "get_db_file", lambda: memory_uri)
-
-    # Patch DB_FILE in analytics if used directly
     monkeypatch.setattr(analytics, "DB_FILE", memory_uri)
