@@ -75,6 +75,18 @@ pip install pytest
 - View habits due today
 - Check streaks
 
+## Optional: Load Dummy Data for Testing
+If you want to quickly populate the app with example users, habits, and completion history (6 weeks), you can use the included script `load_dummy_data.py`.
+This script will:
+- Add 5 example users
+- Assign habits with various frequencies to each user
+- Simulate realistic completion history including broken streaks
+
+### Run the dummy data script:
+```bash
+python load_dummy_data.py
+```
+
 ## Running Tests
 This project uses **[Pytest](https://docs.pytest.org/)** for unit testing.
 To run all tests, open your terminal and run:
