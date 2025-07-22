@@ -111,7 +111,6 @@ To run all tests, open your terminal and run:
 ```bash
 python -m pytest tests
 ```
-Make sure you're in the root project directory where your test files (named like test_*.py) are located — typically in a test/ or tests/ folder.
 
 Each test provides printed output to show what is being tested and whether it passed. This makes it easier to follow along when running tests manually.
 To see detailed output in the terminal, run:
